@@ -1,9 +1,6 @@
 import pygame
 import sys
 import numpy as np
-import time
-
-pygame.init()
 
 # Numeric constants
 WIDTH = 600
@@ -29,8 +26,12 @@ CIRCLE_COLOR = (239, 231, 200)
 CROSS_COLOR = (66, 66, 66)
 
 # create screen
+pygame.init()
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('TIC TAC TOE')
+
+# board
+board = np.zeros((BOARD_ROWS, BOARD_COLS))
 
 def draw_lines():
     # horizontal
@@ -43,6 +44,7 @@ def draw_lines():
 
 def mark_square(row, col, player_num):
     board[row][col] = player_num
+    draw_figure(clicked_row, clicked_col, player_number)
 
 
 def available_square(row, col):
@@ -99,7 +101,6 @@ def draw_victory_line(col1, row1, col2, row2):
     pygame.draw.line(screen, RED, (x1,y1),(x2,y2), VICTORY_LINE_WIDTH)
 
 
-
 def is_player_won(player_num):
     # vertical
     for col in range(BOARD_COLS):
@@ -128,16 +129,11 @@ def is_player_won(player_num):
 
 def init():
     screen.fill(BG_COLOR)
-
     draw_lines()
-
-    # board
-    return np.zeros((BOARD_ROWS, BOARD_COLS))
 
 
 def restart():
-    screen.fill(BG_COLOR)
-    draw_lines()
+    init()
     player_number = 1
     game_over = False
     for row in range(BOARD_ROWS):
@@ -145,8 +141,7 @@ def restart():
             board[row][col] = 0
 
 
-board = init()
-
+init()
 
 player_number = 1
 game_over = False
@@ -169,21 +164,24 @@ while True:
             # the square is available
             if available_square(clicked_row, clicked_col):
                 mark_square(clicked_row,clicked_col, player_number)
-                draw_figure(clicked_row,clicked_col,player_number)
 
                 if is_player_won(player_number):
                     game_over = True
-                    board = restart()
-                    continue
-
-                # change player
-                if player_number == 1:
-                    player_number = 2
                 else:
-                    player_number = 1
+                    # change player
+                    if player_number == 1:
+                        player_number = 2
+                    else:
+                        player_number = 1
 
-                print(board)
+            if is_board_full():
+                game_over = True
+                pygame.display.update()
 
-
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                restart()
+                game_over = False
+                player_number = 1
 
     pygame.display.update()
