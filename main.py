@@ -134,15 +134,23 @@ def init():
 
 def restart():
     init()
-    player_number = 1
-    game_over = False
     for row in range(BOARD_ROWS):
         for col in range(BOARD_COLS):
             board[row][col] = 0
 
 
+def change_player(player_num):
+    # change player
+    if player_num == 1:
+        return 2
+    else:
+        return 1
+
+
+
 init()
 
+starting_player = 1
 player_number = 1
 game_over = False
 
@@ -168,11 +176,7 @@ while True:
                 if is_player_won(player_number):
                     game_over = True
                 else:
-                    # change player
-                    if player_number == 1:
-                        player_number = 2
-                    else:
-                        player_number = 1
+                    player_number = change_player(player_number)
 
             if is_board_full():
                 game_over = True
@@ -182,6 +186,7 @@ while True:
             if event.key == pygame.K_r:
                 restart()
                 game_over = False
-                player_number = 1
+                starting_player = change_player(starting_player)
+                player_number = starting_player
 
     pygame.display.update()
